@@ -82,7 +82,7 @@ export function Navbar() {
 
           <ThemeToggle />
           <Button asChild size="sm">
-            <a href="#get-started">Get Started</a>
+            <Link href="/auth/sign-up">Get Started</Link>
           </Button>
         </div>
       </div>
