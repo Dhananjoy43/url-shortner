@@ -4,18 +4,22 @@ import { HTTPException } from "hono/http-exception";
 import { handle } from "hono/vercel";
 
 import { auth } from "@/lib/auth";
+import { env } from "@/lib/env";
+import linkRoutes from "@/app/api/routes/link.routes";
 
 const app = new Hono<{
   Variables: {
     user: typeof auth.$Infer.Session.user | null;
     session: typeof auth.$Infer.Session.session | null;
   };
-}>().basePath("/api");
+}>()
+  .basePath("/api")
+  .route("/links", linkRoutes);
 
 app.use(
   "/api/*", // or replace with "*" to enable cors for all routes
   cors({
-    origin: process.env.NEXT_PUBLIC_BASE_URL!, // replace with your origin
+    origin: env.NEXT_PUBLIC_BASE_URL,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],

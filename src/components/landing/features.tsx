@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   BarChart3,
   Blocks,
@@ -9,6 +8,7 @@ import {
   Users2,
   Zap,
 } from "lucide-react";
+import { motion } from "motion/react";
 
 import { Card, CardContent } from "@/components/ui/card";
 

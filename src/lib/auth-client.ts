@@ -3,9 +3,10 @@ import { createAuthClient } from "better-auth/react";
 import { toast } from "sonner";
 
 import { auth } from "./auth";
+import { env } from "./env";
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: env.NEXT_PUBLIC_BASE_URL,
   fetchOptions: {
     onError: async (context) => {
       const { response } = context;

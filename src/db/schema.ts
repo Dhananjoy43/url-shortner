@@ -1,6 +1,13 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
-const user = pgTable("user", {
+export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
@@ -13,7 +20,7 @@ const user = pgTable("user", {
     .notNull(),
 });
 
-const session = pgTable("session", {
+export const session = pgTable("session", {
   id: text("id").primaryKey(),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
@@ -28,7 +35,7 @@ const session = pgTable("session", {
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
-const account = pgTable("account", {
+export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
@@ -48,7 +55,7 @@ const account = pgTable("account", {
     .notNull(),
 });
 
-const verification = pgTable("verification", {
+export const verification = pgTable("verification", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
@@ -60,9 +67,38 @@ const verification = pgTable("verification", {
     .notNull(),
 });
 
+export const link = pgTable("link", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  destinationUrl: text("destination_url").notNull(),
+  clicks: integer("clicks").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  lastAccessedAt: timestamp("last_accessed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const linkAnalytics = pgTable("link_analytics", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  linkId: uuid("link_id")
+    .notNull()
+    .references(() => link.id, { onDelete: "cascade" }),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  country: text("country"),
+  deviceType: text("device_type"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 export const schema = {
   user,
   session,
   account,
   verification,
+  link,
+  linkAnalytics,
 };

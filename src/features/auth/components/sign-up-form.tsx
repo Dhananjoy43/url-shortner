@@ -32,7 +32,7 @@ import { SignUpSchema } from "@/features/auth/schema";
 import { SocialProvidersProps } from "@/features/auth/types";
 
 export const SignUpForm = () => {
-  const callbackURL = useSearchParams().get("callbackURL") ?? "/";
+  const callbackURL = useSearchParams().get("callbackURL") || "/dashboard";
   const emailSignUpMutation = useEmailSignUp();
   const socialSignInMutation = useSocialSignIn();
 

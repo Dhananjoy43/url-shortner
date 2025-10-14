@@ -8,11 +8,10 @@ import { SignInSchemaProps } from "@/features/auth/schema";
 import { SocialProvidersProps } from "@/features/auth/types";
 
 export const useEmailSignIn = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (json: SignInSchemaProps & { callbackURL: string }) => {
+    mutationFn: async (json: SignInSchemaProps & { callbackURL?: string }) => {
       const { email, password, callbackURL } = json;
 
       const { data, error } = await authClient.signIn.email({
@@ -20,8 +19,6 @@ export const useEmailSignIn = () => {
         password, // required
         callbackURL,
       });
-
-      console.log("User: ", data);
 
       if (error) {
         throw new Error(error.message || "Failed to sign in!");
@@ -31,7 +28,6 @@ export const useEmailSignIn = () => {
     onSuccess: () => {
       toast.success("Sign in successfull");
       queryClient.invalidateQueries({ queryKey: ["auth-user"] });
-      router.push("/dashboard");
     },
     onError: (err) => {
       toast.error(err.message || "Failed to sign in!");
@@ -69,7 +65,6 @@ export const useSocialSignIn = () => {
     onSuccess: () => {
       toast.success("Sign in successfull");
       queryClient.invalidateQueries({ queryKey: ["auth-user"] });
-      router.push("/dashboard");
     },
     onError: (err) => {
       toast.error(err.message || "Failed to sign in!");

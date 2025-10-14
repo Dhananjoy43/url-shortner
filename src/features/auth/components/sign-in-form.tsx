@@ -34,7 +34,7 @@ import { SignInSchema } from "@/features/auth/schema";
 import { SocialProvidersProps } from "@/features/auth/types";
 
 export const SignInForm = () => {
-  const callbackURL = useSearchParams().get("callbackURL") ?? "/";
+  const callbackURL = useSearchParams().get("callbackURL") ?? "/dashboard";
   const emailSignInMutation = useEmailSignIn();
   const socialSignInMutation = useSocialSignIn();
 
