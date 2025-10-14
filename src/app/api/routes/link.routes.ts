@@ -1,29 +1,77 @@
 import { db } from "@/db";
 import { schema } from "@/db/schema";
 import { zValidator } from "@hono/zod-validator";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { nanoid } from "nanoid";
 
+import { extractAnalytics } from "@/lib/extract-analytics";
 import { getServerAuth } from "@/lib/get-server-auth";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { redis } from "@/lib/redis";
+import { paginationQueryValidator } from "@/app/api/middlewares/pagination.validator";
 
 import { ShortLinkSchema } from "@/features/links/schema";
 
 export const linkRoutes = new Hono()
 
   // 🧭 1️⃣ Get all links for the authenticated user
-  .get("/", createRateLimiter(5), async (ctx) => {
+  .get("/", paginationQueryValidator, createRateLimiter(5), async (ctx) => {
+    const { limit, offset } = ctx.req.valid("query");
     const { user } = await getServerAuth(ctx);
     if (!user.id) return ctx.json({ error: "Unauthorized" }, 401);
 
     const data = await db.query.link.findMany({
       where: (link, { eq }) => eq(link.userId, user.id),
       orderBy: (link, { desc }) => desc(link.createdAt),
+      limit,
+      offset,
     });
 
-    return ctx.json(data, 200);
+    // Fetch total count
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(schema.link);
+
+    return ctx.json(
+      {
+        data,
+        totalCount: count,
+      },
+      200
+    );
+  })
+  .get("/:slug/redirect", async (ctx) => {
+    const { slug } = ctx.req.param();
+
+    const link = await db.query.link.findFirst({
+      where: (link, { eq }) => eq(link.slug, slug),
+    });
+    if (!link) return ctx.json({ error: "Link not found" }, 404);
+
+    const analytics = extractAnalytics(ctx);
+    console.log("Analytics", analytics);
+
+    await db
+      .update(schema.link)
+      .set({
+        clicks: sql`${schema.link.clicks} + 1`,
+      })
+      .where(eq(schema.link.slug, slug));
+
+    const [data] = await db
+      .insert(schema.linkAnalytics)
+      .values({
+        linkId: link.id,
+        country: analytics.country,
+        ipAddress: analytics.ip,
+        userAgent: analytics.userAgent,
+        referrer: analytics.referrer,
+        deviceType: analytics.deviceType,
+      })
+      .returning();
+    return ctx.json(data);
+    // return ctx.redirect(destinationUrl, 302);
   })
 
   // 🔗 2️⃣ Create a new short link
@@ -59,9 +107,6 @@ export const linkRoutes = new Hono()
           userId: user.id,
         })
         .returning();
-
-      // Cache slug → url mapping for instant redirects with 1-hour expiry
-      await redis.set(`slug:${slug || unique_link_id}`, url, { ex: 3600 }); // 3600 seconds = 1 hour
 
       return ctx.json(newLink, 201);
     }

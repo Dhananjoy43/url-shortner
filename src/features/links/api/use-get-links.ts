@@ -6,7 +6,7 @@ import { hc } from "@/lib/hono";
 
 export function useGetLinks(page: number, limit = 12) {
   return useQuery({
-    queryKey: ["notices", page, limit],
+    queryKey: ["short-links", page, limit],
     queryFn: async () => {
       const res = await hc.api.links.$get({
         query: {
@@ -16,7 +16,8 @@ export function useGetLinks(page: number, limit = 12) {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to fetch notices");
+        const { error } = await res.json();
+        throw new Error(error);
       }
       return res.json();
     },
