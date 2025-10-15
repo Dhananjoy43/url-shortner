@@ -2,30 +2,40 @@ import { Context } from "hono";
 import { UAParser } from "ua-parser-js";
 
 export function extractAnalytics(ctx: Context) {
-  const forwardedFor = ctx.req.header("x-forwarded-for");
-  const realIp = ctx.req.header("x-real-ip");
-  const cfConnectingIp = ctx.req.header("cf-connecting-ip");
+  const headers = ctx.req.header();
 
+  // ✅ IP address
   const ip =
-    (cfConnectingIp ||
-      (forwardedFor ? forwardedFor.split(",")[0].trim() : null) ||
-      realIp) ??
+    headers["x-real-ip"] ||
+    headers["x-forwarded-for"]?.split(",")[0].trim() ||
+    headers["x-vercel-ip"] ||
     "unknown";
 
-  const userAgent = ctx.req.header("user-agent") ?? "unknown";
-  const referrer = ctx.req.header("referer") ?? null;
-  const country = ctx.req.header("cf-ipcountry") ?? "unknown";
+  // ✅ Country fallback (Vercel → Cloudflare → unknown)
+  const country =
+    headers["x-vercel-ip-country"] || headers["cf-ipcountry"] || "unknown";
 
+  // ✅ City / Region if available
+  const city = headers["x-vercel-ip-city"] || "unknown";
+  const region = headers["x-vercel-ip-country-region"] || "unknown";
+
+  // ✅ Referrer (can be empty if user navigates directly)
+  const referrer = headers["referer"] || headers["referrer"] || "unknown";
+
+  // ✅ User agent + device info
+  const userAgent = headers["user-agent"] ?? "unknown";
   const parser = new UAParser(userAgent);
-  const deviceType = parser.getDevice().type || "desktop";
-  const browser = parser.getBrowser().name;
-  const os = parser.getOS().name;
+  const deviceType = parser.getDevice().type || "unknown";
+  const browser = parser.getBrowser().name || "unknown";
+  const os = parser.getOS().name || "unknown";
 
   return {
     ip,
-    userAgent,
-    referrer,
     country,
+    city,
+    region,
+    referrer,
+    userAgent,
     deviceType,
     browser,
     os,

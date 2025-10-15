@@ -67,7 +67,7 @@ export const linkRoutes = new Hono()
         ipAddress: analytics.ip,
         userAgent: analytics.userAgent,
         referrer: analytics.referrer,
-        deviceType: analytics.deviceType,
+        deviceType: analytics?.deviceType,
       })
       .returning();
     return ctx.json(data);
