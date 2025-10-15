@@ -86,11 +86,19 @@ export const linkAnalytics = pgTable("link_analytics", {
   linkId: uuid("link_id")
     .notNull()
     .references(() => link.id, { onDelete: "cascade" }),
+
+  // Analytics fields
   ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  referrer: text("referrer"),
   country: text("country"),
+  region: text("region"),
+  city: text("city"),
+  referrer: text("referrer"),
+  userAgent: text("user_agent"),
   deviceType: text("device_type"),
+  browser: text("browser"),
+  os: text("os"),
+
+  // Timestamp of the event
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 

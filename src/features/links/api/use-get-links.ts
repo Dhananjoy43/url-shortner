@@ -24,5 +24,6 @@ export function useGetLinks(page: number, limit = 12) {
     // keepPreviousData: true, // smoother pagination
     staleTime: 1000 * 60 * 5, // 5 min cache
     refetchOnWindowFocus: false,
+    retry: 2,
   });
 }

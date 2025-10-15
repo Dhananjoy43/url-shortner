@@ -27,7 +27,7 @@ const SIDEBAR_MENUS = [
   },
   {
     title: "Analytics",
-    url: "/dashboard/admin/gallery",
+    url: "/dashboard/analytics",
     icon: IconChartBar,
   },
 ];

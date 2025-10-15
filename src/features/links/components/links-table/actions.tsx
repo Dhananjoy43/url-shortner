@@ -1,6 +1,7 @@
 "use client";
 
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react";
+import { IconChartBar, IconEdit, IconTrash } from "@tabler/icons-react";
+import { MoreHorizontal } from "lucide-react";
 
 // import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
@@ -50,7 +51,11 @@ export const Actions = (notice: ShortlinksProps) => {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem onClick={handleUpdateNotice}>
-            <Edit />
+            <IconChartBar />
+            Analytics
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleUpdateNotice}>
+            <IconEdit />
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -58,7 +63,7 @@ export const Actions = (notice: ShortlinksProps) => {
             disabled={isPending}
             onClick={handleDeleteNotice}
           >
-            <Trash2 /> Delete
+            <IconTrash /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

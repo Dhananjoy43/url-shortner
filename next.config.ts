@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        // Exclude both /dashboard and /api from redirection
+        source: "/:slug((?!dashboard|api).*)",
+        destination: "/api/links/:slug/redirect",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

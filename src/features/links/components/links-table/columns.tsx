@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { CheckCheck, Copy } from "lucide-react";
+import { useCopyToClipboard } from "react-use";
 
 import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 import { ShortlinksProps } from "@/features/links/types";
 
@@ -19,7 +20,9 @@ export const columns: ColumnDef<ShortlinksProps>[] = [
     header: "Title",
     size: 120,
     cell: ({ row }) => (
-      <span className="truncate font-medium">{row.getValue("title")}</span>
+      <p className="truncate text-left font-medium capitalize">
+        {row.getValue("title")}
+      </p>
     ),
   },
   {
@@ -28,33 +31,46 @@ export const columns: ColumnDef<ShortlinksProps>[] = [
     size: 40,
     cell: ({ row }) => {
       const slug = row.getValue("slug");
+      const shortUrl = `${env.NEXT_PUBLIC_BASE_URL}/${slug}`;
+
+      const [, copyToClipboard] = useCopyToClipboard();
+      const [copied, setCopied] = useState(false);
+
+      const handleCopy = async () => {
+        copyToClipboard(shortUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      };
+
       return (
-        <Link
-          href={`${env.NEXT_PUBLIC_BASE_URL}/${slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cn(buttonVariants({ variant: "link", size: "sm" }))}
+        <Button
+          variant="link"
+          size="sm"
+          onClick={handleCopy}
+          className="flex w-full cursor-pointer justify-start truncate font-mono text-sm"
+          disabled={copied}
         >
-          {`${env.NEXT_PUBLIC_BASE_URL}/${slug}`}
-        </Link>
+          {copied ? <CheckCheck className="text-emerald-300" /> : <Copy />}
+          <span>{shortUrl}</span>
+        </Button>
       );
     },
   },
   {
     accessorKey: "destinationUrl",
-    header: "Destination Url",
+    header: "Target",
     size: 40,
     cell: ({ row }) => {
       const slug = row.getValue("destinationUrl") as string;
       return (
-        <Link
+        <a
           href={slug}
           target="_blank"
           rel="noopener noreferrer"
           className={cn(buttonVariants({ variant: "link", size: "sm" }))}
         >
           View
-        </Link>
+        </a>
       );
     },
   },
@@ -77,19 +93,14 @@ export const columns: ColumnDef<ShortlinksProps>[] = [
     },
   },
   {
-    accessorKey: "createdAt",
-    header: "Publish Date",
+    accessorKey: "clicks",
+    header: "Clicks",
     size: 100,
-    cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string | null;
-      if (!date) return <span className="text-muted-foreground">—</span>;
-      return format(new Date(date), "hh:mm a, PP");
-    },
   },
   {
     id: "actions",
     size: 40,
-    header: "Actions",
+    header: "",
     cell: ({ row }) => {
       const notice = row.original;
 

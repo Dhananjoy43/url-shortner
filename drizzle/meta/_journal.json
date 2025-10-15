@@ -8,6 +8,13 @@
       "when": 1760462432288,
       "tag": "0000_dazzling_hex",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1760557072558,
+      "tag": "0001_orange_stature",
+      "breakpoints": true
     }
   ]
 }

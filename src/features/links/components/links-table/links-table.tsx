@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconLink } from "@tabler/icons-react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,9 +12,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDownIcon, ChevronUpIcon, Loader2 } from "lucide-react";
+import { LayoutGrid, Loader2, TableIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import {
   Table,
   TableBody,
@@ -24,10 +32,10 @@ import {
 } from "@/components/ui/table";
 import { TablePagination } from "@/components/global/data-table/pagination";
 import { SearchInput } from "@/components/global/data-table/search-input";
-import { ViewOptions } from "@/components/global/data-table/view-options";
 
 import { useGetLinks } from "@/features/links/api/use-get-links";
-import { useShortenLinkStore } from "@/features/links/store/shorten-link-dialog-store";
+
+import { CardView } from "./card-view";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,9 +45,9 @@ export function LinksTable<TData, TValue>({
   columns,
 }: DataTableProps<TData, TValue>) {
   const [page, setPage] = useState(1);
+  const [view, setView] = useState<"table" | "card">("card");
   const limit = 12;
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const { onOpen } = useShortenLinkStore();
   const { data, isLoading, error } = useGetLinks(page, limit);
 
   const links = data?.data ?? [];
@@ -61,114 +69,111 @@ export function LinksTable<TData, TValue>({
 
   return (
     <div className="rounded-md border p-2 md:p-4">
-      <div className="flex items-center gap-1 py-2 md:gap-2 md:py-4">
+      <div className="flex items-center justify-between gap-2 py-4">
         <SearchInput
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(val) => table.getColumn("title")?.setFilterValue(val)}
           placeholder="Filter by title..."
         />
-        {/* <StatusFilter table={table} /> */}
-        <ViewOptions table={table} />
-        {/* <Button onClick={onOpen} size={"sm"} className="ml-auto cursor-pointer">
-          <Plus />
-          <span className="hidden md:inline">Add Notice</span>
-        </Button> */}
+
+        <div className="flex gap-1">
+          <Button
+            size="icon"
+            variant={view === "table" ? "default" : "outline"}
+            onClick={() => setView("table")}
+          >
+            <TableIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant={view === "card" ? "default" : "outline"}
+            onClick={() => setView("card")}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: `${header.getSize()}px` }}
-                    className="border font-semibold"
-                  >
-                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                      <div
-                        className={cn(
-                          "flex h-full cursor-pointer items-center justify-between gap-2 select-none"
-                        )}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: (
-                            <ChevronUpIcon className="opacity-60" size={16} />
-                          ),
-                          desc: (
-                            <ChevronDownIcon className="opacity-60" size={16} />
-                          ),
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    ) : (
-                      flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <Loader2 className="text-muted-foreground mx-auto h-6 w-6 animate-spin" />
-                </TableCell>
-              </TableRow>
-            ) : error ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-red-500"
-                >
-                  {error.message || "Failed to load links"}
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="border">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+
+      {isLoading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="text-center text-red-500">{error.message}</div>
+      ) : view === "table" ? (
+        <div className="overflow-hidden rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className="border text-center font-semibold"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id} className="border text-center">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <Empty>
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <IconLink className="text-primary" />
+                        </EmptyMedia>
+                        <EmptyTitle>
+                          {table.getColumn("title")?.getFilterValue()
+                            ? "No links match your search"
+                            : "No links found"}
+                        </EmptyTitle>
+                        <EmptyDescription>
+                          {table.getColumn("title")?.getFilterValue()
+                            ? "Try adjusting your search or filter to find links."
+                            : "You haven&apos;t created any short URLs yet. Create one to get started."}
+                        </EmptyDescription>
+                      </EmptyHeader>
+                    </Empty>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <CardView table={table} />
+      )}
+
       <TablePagination
         page={page}
         setPage={setPage}
         limit={limit}
-        totalCount={data?.totalCount} // if API returns it
+        totalCount={data?.totalCount}
       />
     </div>
   );

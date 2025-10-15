@@ -44,14 +44,27 @@ export const linkRoutes = new Hono()
   .get("/:slug/redirect", async (ctx) => {
     const { slug } = ctx.req.param();
 
+    console.log("Slug: ", slug);
+
     const link = await db.query.link.findFirst({
       where: (link, { eq }) => eq(link.slug, slug),
     });
     if (!link) return ctx.json({ error: "Link not found" }, 404);
 
     const analytics = extractAnalytics(ctx);
-    console.log("Analytics", analytics);
+    console.log("Analytics: ", analytics);
 
+    const {
+      ip,
+      country,
+      region,
+      city,
+      os,
+      deviceType,
+      userAgent,
+      browser,
+      referrer,
+    } = analytics;
     await db
       .update(schema.link)
       .set({
@@ -59,19 +72,22 @@ export const linkRoutes = new Hono()
       })
       .where(eq(schema.link.slug, slug));
 
-    const [data] = await db
+    await db
       .insert(schema.linkAnalytics)
       .values({
         linkId: link.id,
-        country: analytics.country,
-        ipAddress: analytics.ip,
-        userAgent: analytics.userAgent,
-        referrer: analytics.referrer,
-        deviceType: analytics?.deviceType,
+        ipAddress: ip,
+        country,
+        region,
+        city,
+        os,
+        deviceType,
+        userAgent,
+        browser,
+        referrer,
       })
       .returning();
-    return ctx.json(data);
-    // return ctx.redirect(destinationUrl, 302);
+    return ctx.redirect(link.destinationUrl, 302);
   })
 
   // 🔗 2️⃣ Create a new short link
