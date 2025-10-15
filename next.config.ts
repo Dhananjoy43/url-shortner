@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        // Exclude both /dashboard and /api from redirection
-        source: "/:slug((?!dashboard|api).*)",
+        // Exclude /dashboard, /api, and / (home)
+        source: "/:slug((?!dashboard|auth|api)(?!^$).+)",
         destination: "/api/links/:slug/redirect",
         permanent: false,
       },

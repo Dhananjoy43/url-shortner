@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+import { getServerSession } from "@/lib/get-server-session";
 import { CTAStrip } from "@/components/landing/cta-strip";
 import { Features } from "@/components/landing/features";
 import { Hero } from "@/components/landing/hero";
@@ -6,7 +9,11 @@ import { LogosMarquee } from "@/components/landing/logos-marquee";
 import { Pricing } from "@/components/landing/pricing";
 import { Testimonials } from "@/components/landing/testimonials";
 
-export default function Page() {
+export default async function HomePage() {
+  const { session } = await getServerSession();
+  if (session) {
+    redirect("/dashboard");
+  }
   return (
     <main>
       <Hero />
