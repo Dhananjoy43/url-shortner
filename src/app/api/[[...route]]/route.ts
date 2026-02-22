@@ -35,8 +35,6 @@ app.all("/auth/*", async (c) => {
 });
 
 app.onError((err, ctx) => {
-  console.log("Error: ", err);
-
   if (err instanceof HTTPException) {
     if (err.status === 401) {
       return ctx.json({ error: "Unauthorized" }, 401);

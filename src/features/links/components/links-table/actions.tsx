@@ -1,8 +1,15 @@
 "use client";
 
-import { IconChartBar, IconEdit, IconTrash } from "@tabler/icons-react";
+import { useState } from "react";
+import {
+  IconChartBar,
+  IconEdit,
+  IconQrcode,
+  IconTrash,
+} from "@tabler/icons-react";
 import { MoreHorizontal } from "lucide-react";
 
+import { env } from "@/lib/env";
 // import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +21,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ShortlinksProps } from "../../types";
+import { QRCodeDialog } from "./qr-code-dialog";
 
 export const Actions = (notice: ShortlinksProps) => {
   //   const updateNoticeStore = useUpdateNoticeStore();
   //   const deleteNoticeMutation = useDeleteNotice(notice.id);
   const isPending = false;
+  const [isQrOpen, setIsQrOpen] = useState(false);
+
+  const shortUrl = `${env.NEXT_PUBLIC_BASE_URL}/${notice.slug}`;
 
   //   const [ConfirmDialog, confirm] = useConfirm(
   //     "Are you sure?",
@@ -40,6 +51,12 @@ export const Actions = (notice: ShortlinksProps) => {
 
   return (
     <>
+      <QRCodeDialog
+        url={shortUrl}
+        title={notice.title || "Untitled Link"}
+        open={isQrOpen}
+        onOpenChange={setIsQrOpen}
+      />
       {/* <ConfirmDialog /> */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -50,6 +67,10 @@ export const Actions = (notice: ShortlinksProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => setIsQrOpen(true)}>
+            <IconQrcode />
+            QR Code
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleUpdateNotice}>
             <IconChartBar />
             Analytics

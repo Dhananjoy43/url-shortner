@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useEffect, useRef, useState } from "react";
-import { IconChartBar } from "@tabler/icons-react";
+import { IconChartBar, IconQrcode } from "@tabler/icons-react";
 import { format } from "date-fns";
 import { CheckCheck, Copy, ExternalLink } from "lucide-react";
 import { motion } from "motion/react";
@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { LinkDetailsPros } from "@/features/links/types";
+
+import { QRCodeDialog } from "./qr-code-dialog";
 
 interface LinkDetailsCardProps {
   link: LinkDetailsPros;
@@ -119,6 +121,12 @@ export const LinkDetailsCard: FC<LinkDetailsCardProps> = ({
                     <ExternalLink className="h-4 w-4" />
                   </a>
                 </Button>
+
+                <QRCodeDialog url={shortUrl} title={title || "Untitled Link"}>
+                  <Button size="icon" variant="ghost" title="QR Code">
+                    <IconQrcode className="h-4 w-4" />
+                  </Button>
+                </QRCodeDialog>
 
                 {onAnalytics && (
                   <Button

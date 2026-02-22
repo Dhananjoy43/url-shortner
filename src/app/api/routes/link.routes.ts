@@ -44,8 +44,6 @@ export const linkRoutes = new Hono()
   .get("/:slug/redirect", async (ctx) => {
     const { slug } = ctx.req.param();
 
-    console.log("Slug: ", slug);
-
     const link = await db.query.link.findFirst({
       where: (link, { eq }) => eq(link.slug, slug),
     });
