@@ -12,5 +12,6 @@ export const paginationQueryValidator = zValidator(
       .string()
       .optional()
       .transform((val) => Number(val) || 0),
+    search: z.string().optional(),
   })
 );

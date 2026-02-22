@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   IconChartBar,
   IconEdit,
@@ -30,6 +31,7 @@ export const Actions = (notice: ShortlinksProps | LinkDetailsPros) => {
   const deleteNoticeMutation = useDeleteLink(notice.id);
   const isPending = deleteNoticeMutation.isPending;
   const [isQrOpen, setIsQrOpen] = useState(false);
+  const router = useRouter();
 
   const shortUrl = `${env.NEXT_PUBLIC_BASE_URL}/${notice.slug}`;
 
@@ -72,7 +74,11 @@ export const Actions = (notice: ShortlinksProps | LinkDetailsPros) => {
             <IconQrcode />
             QR Code
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleUpdateNotice}>
+          <DropdownMenuItem
+            onClick={() =>
+              router.push(`/dashboard/links/${notice.slug}/analytics`)
+            }
+          >
             <IconChartBar />
             Analytics
           </DropdownMenuItem>

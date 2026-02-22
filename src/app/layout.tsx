@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { config } from "dotenv";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 
 import { QueryClientProvider } from "@/components/providers/query-client-provider";
@@ -36,7 +37,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <QueryClientProvider>{children}</QueryClientProvider>
+          <NuqsAdapter>
+            <QueryClientProvider>{children}</QueryClientProvider>
+          </NuqsAdapter>
           <Toaster position="top-center" richColors />
         </ThemeProvider>
       </body>

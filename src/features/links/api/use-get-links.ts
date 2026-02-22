@@ -4,14 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 
 import { hc } from "@/lib/hono";
 
-export function useGetLinks(page: number, limit = 12) {
+export function useGetLinks(page: number, limit = 12, search?: string) {
   return useQuery({
-    queryKey: ["short-links", page, limit],
+    queryKey: ["short-links", page, limit, search],
     queryFn: async () => {
       const res = await hc.api.links.$get({
         query: {
           offset: ((page - 1) * limit).toString(),
           limit: limit.toString(),
+          ...(search ? { search } : {}),
         },
       });
 

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Icon, IconProps } from "@tabler/icons-react";
+import { Icon, IconLink, IconProps } from "@tabler/icons-react";
 import { LucideIcon } from "lucide-react";
 
 import { APP_NAME } from "@/lib/constants";
@@ -37,6 +37,9 @@ export function AppSidebar({ menus, ...props }: AppSidebarProps) {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="border-b">
         <SidebarMenuButton size="lg" className="hover:bg-sidebar">
+          <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-xl shadow-sm">
+            <IconLink className="h-5 w-5" />
+          </div>
           <h3 className="text-primary truncate text-2xl font-bold">
             {APP_NAME}
           </h3>

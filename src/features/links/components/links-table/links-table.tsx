@@ -12,7 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { LayoutGrid, Loader2, TableIcon } from "lucide-react";
+import { AlertCircle, LayoutGrid, Loader2, TableIcon } from "lucide-react";
+import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,11 +45,18 @@ interface DataTableProps<TData, TValue> {
 export function LinksTable<TData, TValue>({
   columns,
 }: DataTableProps<TData, TValue>) {
-  const [page, setPage] = useState(1);
-  const [view, setView] = useState<"table" | "card">("card");
-  const limit = 12;
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [search, setSearch] = useQueryState(
+    "search",
+    parseAsString.withDefault("")
+  );
+  const [view, setView] = useQueryState(
+    "view",
+    parseAsString.withDefault("card")
+  );
+  const limit = 6;
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const { data, isLoading, error } = useGetLinks(page, limit);
+  const { data, isLoading, error } = useGetLinks(page, limit, search);
 
   const links = data?.data ?? [];
 
@@ -71,9 +79,12 @@ export function LinksTable<TData, TValue>({
     <div className="rounded-md border p-2 md:p-4">
       <div className="flex items-center justify-between gap-2 py-4">
         <SearchInput
-          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-          onChange={(val) => table.getColumn("title")?.setFilterValue(val)}
-          placeholder="Filter by title..."
+          value={search}
+          onChange={(val) => {
+            setSearch(val || null);
+            setPage(1);
+          }}
+          placeholder="Filter by title or slug..."
         />
 
         <div className="flex gap-1">
@@ -99,7 +110,20 @@ export function LinksTable<TData, TValue>({
           <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
         </div>
       ) : error ? (
-        <div className="text-center text-red-500">{error.message}</div>
+        <div className="flex h-48 flex-col items-center justify-center space-y-3 rounded-lg border border-dashed text-center">
+          <div className="bg-destructive/10 flex size-12 items-center justify-center rounded-full">
+            <AlertCircle className="text-destructive size-6" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-foreground font-semibold tracking-tight">
+              Failed to load links
+            </h3>
+            <p className="text-muted-foreground max-w-sm text-sm">
+              {error.message ||
+                "An unexpected error occurred while fetching your data. Please try again later."}
+            </p>
+          </div>
+        </div>
       ) : view === "table" ? (
         <div className="overflow-hidden rounded-md border">
           <Table>
@@ -148,12 +172,12 @@ export function LinksTable<TData, TValue>({
                           <IconLink className="text-primary" />
                         </EmptyMedia>
                         <EmptyTitle>
-                          {table.getColumn("title")?.getFilterValue()
+                          {search
                             ? "No links match your search"
                             : "No links found"}
                         </EmptyTitle>
                         <EmptyDescription>
-                          {table.getColumn("title")?.getFilterValue()
+                          {search
                             ? "Try adjusting your search or filter to find links."
                             : "You haven&apos;t created any short URLs yet. Create one to get started."}
                         </EmptyDescription>
@@ -166,7 +190,7 @@ export function LinksTable<TData, TValue>({
           </Table>
         </div>
       ) : (
-        <CardView table={table} />
+        <CardView table={table} search={search} />
       )}
 
       <TablePagination

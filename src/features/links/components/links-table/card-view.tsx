@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { IconLink } from "@tabler/icons-react";
 import { Table } from "@tanstack/react-table";
-import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,20 +23,20 @@ import { LinkDetailsCard } from "./link-details-card";
 
 interface CardViewProps<TData> {
   table: Table<TData>;
+  search: string;
 }
 
-export function CardView<TData>({ table }: CardViewProps<TData>) {
+export function CardView<TData>({ table, search }: CardViewProps<TData>) {
   const { open } = useSidebar();
   const { onOpen } = useShortenLinkStore();
+  const router = useRouter();
 
   const links = table
     .getRowModel()
     .rows.map((row) => row.original) as LinkDetailsPros[];
 
   if (!links?.length) {
-    const isFilterActive = !!(table
-      ?.getColumn("title")
-      ?.getFilterValue() as string);
+    const isFilterActive = !!search;
 
     return (
       <Empty>
@@ -77,8 +77,8 @@ export function CardView<TData>({ table }: CardViewProps<TData>) {
           <LinkDetailsCard
             link={link}
             index={i}
-            onAnalytics={() => {
-              toast.warning("Coming Soon!");
+            onAnalytics={(slug) => {
+              router.push(`/dashboard/links/${slug}/analytics`);
             }}
           />
         );

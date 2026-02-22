@@ -7,7 +7,6 @@ import { useCopyToClipboard } from "react-use";
 
 import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 
 import { ShortlinksProps } from "@/features/links/types";
@@ -74,24 +73,24 @@ export const columns: ColumnDef<ShortlinksProps>[] = [
       );
     },
   },
-  {
-    accessorKey: "isActive",
-    header: "Status",
-    size: 60,
-    cell: ({ row }) => {
-      const isActive = row.getValue("isActive") as boolean;
-      return (
-        <Badge variant={isActive ? "success" : "destructive"}>
-          {isActive ? "Published" : "Draft"}
-        </Badge>
-      );
-    },
-    filterFn: (row, columnId, filterValue: string[]) => {
-      if (!filterValue?.length) return true;
-      const rowValue = row.getValue(columnId) as boolean;
-      return filterValue.includes(rowValue ? "Published" : "Draft");
-    },
-  },
+  // {
+  //   accessorKey: "isActive",
+  //   header: "Status",
+  //   size: 60,
+  //   cell: ({ row }) => {
+  //     const isActive = row.getValue("isActive") as boolean;
+  //     return (
+  //       <Badge variant={isActive ? "success" : "destructive"}>
+  //         {isActive ? "Published" : "Draft"}
+  //       </Badge>
+  //     );
+  //   },
+  //   filterFn: (row, columnId, filterValue: string[]) => {
+  //     if (!filterValue?.length) return true;
+  //     const rowValue = row.getValue(columnId) as boolean;
+  //     return filterValue.includes(rowValue ? "Published" : "Draft");
+  //   },
+  // },
   {
     accessorKey: "clicks",
     header: "Clicks",

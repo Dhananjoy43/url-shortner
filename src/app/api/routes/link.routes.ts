@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { schema } from "@/db/schema";
 import { zValidator } from "@hono/zod-validator";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { nanoid } from "nanoid";
 
@@ -17,26 +17,37 @@ export const linkRoutes = new Hono()
 
   // 🧭 1️⃣ Get all links for the authenticated user
   .get("/", paginationQueryValidator, createRateLimiter(5), async (ctx) => {
-    const { limit, offset } = ctx.req.valid("query");
+    const { limit, offset, search } = ctx.req.valid("query");
     const { user } = await getServerAuth(ctx);
     if (!user.id) return ctx.json({ error: "Unauthorized" }, 401);
 
+    const whereClause = search
+      ? and(
+          eq(schema.link.userId, user.id),
+          or(
+            ilike(schema.link.title, `%${search}%`),
+            ilike(schema.link.slug, `%${search}%`)
+          )
+        )
+      : eq(schema.link.userId, user.id);
+
     const data = await db.query.link.findMany({
-      where: (link, { eq }) => eq(link.userId, user.id),
+      where: whereClause,
       orderBy: (link, { desc }) => desc(link.createdAt),
       limit,
       offset,
     });
 
-    // Fetch total count
+    // Fetch total count for this user
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)` })
-      .from(schema.link);
+      .from(schema.link)
+      .where(whereClause);
 
     return ctx.json(
       {
         data,
-        totalCount: count,
+        totalCount: Number(count),
       },
       200
     );
@@ -240,7 +251,86 @@ export const linkRoutes = new Hono()
     if (link.userId !== user.id) return ctx.json({ error: "Forbidden" }, 403);
 
     const totalClicks = (await redis.get<number>(`clicks:${slug}`)) ?? 0;
-    return ctx.json({ slug, totalClicks });
+
+    // Aggregations
+    const date30DaysAgo = new Date();
+    date30DaysAgo.setDate(date30DaysAgo.getDate() - 30);
+
+    const timeSeries = await db
+      .select({
+        date: sql<string>`DATE(${schema.linkAnalytics.timestamp})`,
+        clicks: sql<number>`count(*)`,
+      })
+      .from(schema.linkAnalytics)
+      .where(
+        and(
+          eq(schema.linkAnalytics.linkId, link.id),
+          sql`${schema.linkAnalytics.timestamp} >= ${date30DaysAgo}`
+        )
+      )
+      .groupBy(sql`DATE(${schema.linkAnalytics.timestamp})`)
+      .orderBy(sql`DATE(${schema.linkAnalytics.timestamp})`);
+
+    const devices = await db
+      .select({
+        device: schema.linkAnalytics.deviceType,
+        clicks: sql<number>`count(*)`,
+      })
+      .from(schema.linkAnalytics)
+      .where(eq(schema.linkAnalytics.linkId, link.id))
+      .groupBy(schema.linkAnalytics.deviceType)
+      .orderBy(sql`count(*) DESC`);
+
+    const browsers = await db
+      .select({
+        browser: schema.linkAnalytics.browser,
+        clicks: sql<number>`count(*)`,
+      })
+      .from(schema.linkAnalytics)
+      .where(eq(schema.linkAnalytics.linkId, link.id))
+      .groupBy(schema.linkAnalytics.browser)
+      .orderBy(sql`count(*) DESC`);
+
+    const os = await db
+      .select({
+        os: schema.linkAnalytics.os,
+        clicks: sql<number>`count(*)`,
+      })
+      .from(schema.linkAnalytics)
+      .where(eq(schema.linkAnalytics.linkId, link.id))
+      .groupBy(schema.linkAnalytics.os)
+      .orderBy(sql`count(*) DESC`);
+
+    const locations = await db
+      .select({
+        country: schema.linkAnalytics.country,
+        clicks: sql<number>`count(*)`,
+      })
+      .from(schema.linkAnalytics)
+      .where(eq(schema.linkAnalytics.linkId, link.id))
+      .groupBy(schema.linkAnalytics.country)
+      .orderBy(sql`count(*) DESC`);
+
+    const referrers = await db
+      .select({
+        referrer: schema.linkAnalytics.referrer,
+        clicks: sql<number>`count(*)`,
+      })
+      .from(schema.linkAnalytics)
+      .where(eq(schema.linkAnalytics.linkId, link.id))
+      .groupBy(schema.linkAnalytics.referrer)
+      .orderBy(sql`count(*) DESC`);
+
+    return ctx.json({
+      slug,
+      totalClicks,
+      timeSeries,
+      devices,
+      browsers,
+      os,
+      locations,
+      referrers,
+    });
   });
 
 export default linkRoutes;

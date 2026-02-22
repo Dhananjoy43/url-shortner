@@ -25,7 +25,8 @@ export function TablePagination({
   limit,
   totalCount,
 }: PaginationProps) {
-  const totalPages = totalCount ? Math.ceil(totalCount / limit) : undefined;
+  const totalPages =
+    totalCount != null ? Math.ceil(totalCount / limit) : undefined;
 
   return (
     <div className="mt-4 flex items-center justify-between gap-8">
@@ -77,7 +78,7 @@ export function TablePagination({
                 size="icon"
                 variant="outline"
                 onClick={() => setPage(page + 1)}
-                disabled={!totalPages || page >= totalPages}
+                disabled={totalPages == null || page >= totalPages}
                 aria-label="Go to next page"
               >
                 <ChevronRightIcon size={16} />
@@ -89,7 +90,7 @@ export function TablePagination({
                 size="icon"
                 variant="outline"
                 onClick={() => totalPages && setPage(totalPages)}
-                disabled={!totalPages || page >= totalPages}
+                disabled={totalPages == null || page >= totalPages}
                 aria-label="Go to last page"
               >
                 <ChevronLastIcon size={16} />

@@ -11,52 +11,53 @@ import { useShortenLinkStore } from "@/features/links/store/shorten-link-dialog-
 export function Banner() {
   const { onOpen } = useShortenLinkStore();
   return (
-    <header className="bg-secondary relative w-full overflow-hidden rounded-xl border p-6 md:p-8">
-      <div className="relative z-10 flex flex-col">
-        <div className="max-w-2xl">
-          <h2 className="text-left text-2xl font-bold tracking-tight">
-            Welcome to <span className="text-primary">Shortly</span>
-          </h2>
-          <p className="text-muted-foreground mt-2 text-pretty md:text-lg">
+    <header className="bg-card relative w-full overflow-hidden rounded-xl border p-6 shadow-sm md:p-8">
+      <div className="relative z-10 flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+        <div className="max-w-xl space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary text-primary-foreground flex h-10 w-10 items-center justify-center rounded-xl shadow-sm">
+              <IconLink className="h-5 w-5" />
+            </div>
+            <h2 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
+              Welcome to Shortly
+            </h2>
+          </div>
+          <p className="text-muted-foreground text-base text-pretty sm:text-lg">
             Create short, shareable links in seconds. Simplify your URLs, track
             clicks, and share with ease—perfect for social media, marketing, or
             personal use.
           </p>
-        </div>
-        <div className="mt-4 flex flex-wrap gap-2 text-sm">
-          <Badge variant={"outline"} className="rounded-full px-3">
-            Fast & Free
-          </Badge>
-          <Badge variant={"outline"} className="rounded-full px-3">
-            Trackable Links
-          </Badge>
-          <Badge variant={"outline"} className="mr-auto rounded-full px-3">
-            Easy to Share
-          </Badge>
-          {/* Actions */}
-          <div className="flex flex-wrap items-center gap-3">
-            <Button onClick={() => onOpen()} className="cursor-pointer">
-              <IconLink />
-              Shorten a URL
-            </Button>
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <Badge variant="secondary" className="bg-secondary/50 font-medium">
+              Fast & Free
+            </Badge>
+            <Badge variant="secondary" className="bg-secondary/50 font-medium">
+              Trackable Links
+            </Badge>
+            <Badge variant="secondary" className="bg-secondary/50 font-medium">
+              Easy to Share
+            </Badge>
           </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex shrink-0">
+          <Button
+            onClick={() => onOpen()}
+            size="lg"
+            className="gap-2 shadow-sm"
+          >
+            <IconLink size={18} />
+            Shorten new URL
+          </Button>
         </div>
       </div>
 
-      {/* subtle decorative shapes using tokens, not a gradient */}
-      <div
-        aria-hidden="true"
-        className="border-border/70 bg-card pointer-events-none absolute -top-8 -right-8 size-40 rounded-full border opacity-70"
-      />
-      <div
-        aria-hidden="true"
-        className="border-border/70 bg-card pointer-events-none absolute -bottom-10 -left-10 size-56 rounded-2xl border opacity-70"
-      />
-      <div
-        aria-hidden="true"
-        className="border-border/70 bg-card pointer-events-none absolute -right-8 -bottom-8 size-64 rounded-full border opacity-40"
-      />
       <GridPatternBackground />
+      <div
+        className="from-background to-background dark:from-background dark:to-background pointer-events-none absolute inset-0 bg-gradient-to-r via-transparent dark:via-transparent"
+        aria-hidden="true"
+      />
     </header>
   );
 }

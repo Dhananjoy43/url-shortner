@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  IconChartBar,
-  IconLayoutDashboard,
-  IconLink,
-  IconQrcode,
-} from "@tabler/icons-react";
+import { IconLayoutDashboard, IconLink } from "@tabler/icons-react";
 
 import { AppSidebar } from "./app-sidebar";
 
@@ -19,16 +14,6 @@ const SIDEBAR_MENUS = [
     title: "Links",
     url: "/dashboard/links",
     icon: IconLink,
-  },
-  {
-    title: "QR Codes",
-    url: "/dashboard/qr-codes",
-    icon: IconQrcode,
-  },
-  {
-    title: "Analytics",
-    url: "/dashboard/analytics",
-    icon: IconChartBar,
   },
 ];
 

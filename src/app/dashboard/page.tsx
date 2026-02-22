@@ -2,8 +2,7 @@
 
 import { motion } from "motion/react";
 
-import { AnalyticsCharts } from "@/features/analytics/components/charts";
-import { KPICards } from "@/features/analytics/components/kpi-cards";
+import { DashboardKPIs } from "@/features/links/components/dashboard-kpis";
 import { RecentLinksTable } from "@/features/links/components/recent-links-table";
 
 const DashboardPage = () => {
@@ -14,12 +13,10 @@ const DashboardPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <>
-          <KPICards />
-          <AnalyticsCharts />
+        <div className="flex flex-col gap-8">
+          <DashboardKPIs />
           <RecentLinksTable />
-          {/* <QuickActions /> */}
-        </>
+        </div>
       </motion.div>
     </div>
   );

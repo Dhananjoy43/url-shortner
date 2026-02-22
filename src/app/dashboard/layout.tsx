@@ -6,6 +6,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Banner } from "@/components/global/banner";
+import { ModeToggle } from "@/components/global/mode-toggle";
 import { DialogProvider } from "@/components/providers/dialog-provider";
 import { DashboardSidebar } from "@/components/sidebar/dashboard-sidebar";
 
@@ -14,8 +15,8 @@ export default function AdminDashboardLayout({ children }: LayoutProps) {
     <SidebarProvider>
       <DashboardSidebar />
       <SidebarInset>
-        <header className="bg-background/60 sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 border-b shadow-xs backdrop-blur-lg transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-1 px-2 md:px-4">
+        <header className="bg-background/60 sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-between gap-2 border-b px-2 shadow-xs backdrop-blur-lg transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-1 md:px-4">
             <SidebarTrigger className="-ml-1" />
 
             <div className="flex items-end sm:hidden">
@@ -24,6 +25,7 @@ export default function AdminDashboardLayout({ children }: LayoutProps) {
               </span>
             </div>
           </div>
+          <ModeToggle />
         </header>
         <main className="space-y-4 p-2 md:p-4">
           <Banner />
