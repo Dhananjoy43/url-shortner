@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { LinkDetailsPros } from "@/features/links/types";
 
+import { Actions } from "./actions";
 import { QRCodeDialog } from "./qr-code-dialog";
 
 interface LinkDetailsCardProps {
@@ -74,9 +75,10 @@ export const LinkDetailsCard: FC<LinkDetailsCardProps> = ({
       >
         <CardHeader>
           <div className="flex items-start justify-between gap-2">
-            <CardTitle className="truncate text-base font-semibold capitalize">
+            <CardTitle className="max-w-[85%] truncate text-base font-semibold capitalize">
               {title || "Untitled Link"}
             </CardTitle>
+            <Actions {...link} />
           </div>
         </CardHeader>
 

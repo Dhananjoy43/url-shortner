@@ -10,7 +10,7 @@ import {
 import { MoreHorizontal } from "lucide-react";
 
 import { env } from "@/lib/env";
-// import { useConfirm } from "@/hooks/use-confirm";
+import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,33 +20,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ShortlinksProps } from "../../types";
+import { useDeleteLink } from "../../api/use-delete-link";
+import { useUpdateLinkStore } from "../../store/update-link-dialog-store";
+import { LinkDetailsPros, ShortlinksProps } from "../../types";
 import { QRCodeDialog } from "./qr-code-dialog";
 
-export const Actions = (notice: ShortlinksProps) => {
-  //   const updateNoticeStore = useUpdateNoticeStore();
-  //   const deleteNoticeMutation = useDeleteNotice(notice.id);
-  const isPending = false;
+export const Actions = (notice: ShortlinksProps | LinkDetailsPros) => {
+  const updateLinkStore = useUpdateLinkStore();
+  const deleteNoticeMutation = useDeleteLink(notice.id);
+  const isPending = deleteNoticeMutation.isPending;
   const [isQrOpen, setIsQrOpen] = useState(false);
 
   const shortUrl = `${env.NEXT_PUBLIC_BASE_URL}/${notice.slug}`;
 
-  //   const [ConfirmDialog, confirm] = useConfirm(
-  //     "Are you sure?",
-  //     "You are about to delete this notice.",
-  //     "destructive"
-  //   );
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Are you sure?",
+    "You are about to delete this link. This action cannot be undone.",
+    "destructive"
+  );
 
   const handleDeleteNotice = async () => {
-    // const ok = await confirm();
-    // if (ok) {
-    //   deleteNoticeMutation.mutate();
-    // }
+    const ok = await confirm();
+    if (ok) {
+      deleteNoticeMutation.mutate();
+    }
   };
 
   const handleUpdateNotice = () => {
-    // updateNoticeStore.notice = notice;
-    // updateNoticeStore.onOpen();
+    updateLinkStore.onOpen(notice);
   };
 
   return (
@@ -57,7 +58,7 @@ export const Actions = (notice: ShortlinksProps) => {
         open={isQrOpen}
         onOpenChange={setIsQrOpen}
       />
-      {/* <ConfirmDialog /> */}
+      <ConfirmDialog />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size={"icon"}>

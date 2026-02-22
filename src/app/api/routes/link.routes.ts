@@ -92,7 +92,7 @@ export const linkRoutes = new Hono()
   .post(
     "/",
     zValidator("json", ShortLinkSchema),
-    createRateLimiter(5),
+    createRateLimiter(60),
     async (ctx) => {
       const { user, session } = await getServerAuth(ctx);
       if (!user || !session) return ctx.json({ error: "Unauthorized" }, 401);
@@ -127,7 +127,7 @@ export const linkRoutes = new Hono()
   )
 
   // 📊 3️⃣ Get link details by slug (for analytics dashboard)
-  .get("/:slug", createRateLimiter(5), async (ctx) => {
+  .get("/:slug", createRateLimiter(60), async (ctx) => {
     const { slug } = ctx.req.param();
 
     // Check Redis cache first
@@ -148,7 +148,7 @@ export const linkRoutes = new Hono()
   })
 
   // 🗑️ 4️⃣ Delete link
-  .delete("/:id", createRateLimiter(2), async (ctx) => {
+  .delete("/:id", createRateLimiter(10), async (ctx) => {
     const { user, session } = await getServerAuth(ctx);
     if (!user || !session) return ctx.json({ error: "Unauthorized" }, 401);
 
@@ -173,6 +173,58 @@ export const linkRoutes = new Hono()
 
     return ctx.json({ message: "Link deleted" });
   })
+
+  // ✏️  Update link
+  .patch(
+    "/:id",
+    zValidator("json", ShortLinkSchema),
+    createRateLimiter(5),
+    async (ctx) => {
+      const { user, session } = await getServerAuth(ctx);
+      if (!user || !session) return ctx.json({ error: "Unauthorized" }, 401);
+
+      const { id } = ctx.req.param();
+      const { title, url, slug } = ctx.req.valid("json");
+
+      // Check ownership
+      const link = await db.query.link.findFirst({
+        where: (fields) => eq(fields.id, id),
+      });
+
+      if (!link) return ctx.json({ error: "Link not found" }, 404);
+      if (link.userId !== user.id) return ctx.json({ error: "Forbidden" }, 403);
+
+      // Check if new slug conflicts with others
+      if (slug && slug !== link.slug) {
+        const existing = await db.query.link.findFirst({
+          where: (fields) => eq(fields.slug, slug),
+        });
+        if (existing) return ctx.json({ error: "Slug already in use" }, 400);
+      }
+
+      // Update
+      const [updatedLink] = await db
+        .update(schema.link)
+        .set({
+          title,
+          destinationUrl: url,
+          slug: slug || link.slug,
+        })
+        .where(eq(schema.link.id, id))
+        .returning();
+
+      // Clear old redis cache if slug changed
+      if (slug && slug !== link.slug) {
+        await redis.del(`slug:${link.slug}`);
+        await redis.del(`clicks:${link.slug}`);
+      }
+
+      // We can also clear/update the new slug, but we usually just let it handle lazily
+      await redis.del(`slug:${updatedLink.slug}`);
+
+      return ctx.json(updatedLink);
+    }
+  )
 
   // 📈 5️⃣ Analytics summary for a slug
   .get("/:slug/stats", createRateLimiter(5), async (ctx) => {
