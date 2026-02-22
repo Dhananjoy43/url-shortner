@@ -30,8 +30,8 @@ const items = [
   },
   {
     icon: Brain,
-    title: "AI-based Link Insights",
-    desc: "Automatic UTM suggestions and anomaly detection.",
+    title: "Advanced Link Insights",
+    desc: "Detailed tracking—device, location, and referrer data.",
   },
   {
     icon: Blocks,
@@ -63,7 +63,8 @@ export function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
         >
-          From edge-speed redirects to AI insights—built for modern teams.
+          From edge-speed redirects to advanced analytics—built for modern
+          teams.
         </motion.p>
 
         <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -75,13 +76,17 @@ export function Features() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.03 }}
             >
-              <Card className="border-border/60 bg-card/60 h-full">
-                <CardContent className="flex h-full flex-col gap-3 p-5">
+              <Card className="border-border/60 bg-card/60 hover:border-primary/40 h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-10px_rgba(var(--primary),0.2)]">
+                <CardContent className="flex h-full flex-col gap-3 p-6">
                   <div className="flex items-center gap-3">
-                    <item.icon className="h-5 w-5" aria-hidden="true" />
-                    <h3 className="font-medium">{item.title}</h3>
+                    <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                      <item.icon className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <h3 className="text-lg font-semibold">{item.title}</h3>
                   </div>
-                  <p className="text-muted-foreground text-sm">{item.desc}</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {item.desc}
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>

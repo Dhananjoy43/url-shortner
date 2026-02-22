@@ -50,15 +50,17 @@ export function Testimonials() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
             >
-              <Card className="border-border/60 bg-card/60 h-full">
-                <CardContent className="flex h-full flex-col gap-4 p-5">
-                  <p className="text-muted-foreground text-sm text-pretty">{`"${t.quote}"`}</p>
+              <Card className="border-border/60 bg-card/60 hover:border-primary/40 h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-10px_rgba(var(--primary),0.2)]">
+                <CardContent className="flex h-full flex-col gap-4 p-6">
+                  <p className="text-muted-foreground text-sm leading-relaxed text-pretty">{`"${t.quote}"`}</p>
                   <div className="mt-auto flex items-center gap-3">
-                    <Avatar>
-                      <AvatarFallback>{t.initials}</AvatarFallback>
+                    <Avatar className="border-primary/20 h-10 w-10 border">
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        {t.initials}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="text-sm">
-                      <div className="font-medium">{t.name}</div>
+                      <div className="font-semibold">{t.name}</div>
                       <div className="text-muted-foreground">{t.role}</div>
                     </div>
                   </div>

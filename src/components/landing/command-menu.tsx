@@ -48,9 +48,6 @@ export function CommandMenu() {
           </CommandItem>
           <CommandItem onSelect={() => navigate("#docs")}>Docs</CommandItem>
           <CommandItem onSelect={() => navigate("#api")}>API</CommandItem>
-          <CommandItem onSelect={() => navigate("#pricing")}>
-            Pricing
-          </CommandItem>
           <CommandItem onSelect={() => navigate("https://github.com")}>
             GitHub
           </CommandItem>

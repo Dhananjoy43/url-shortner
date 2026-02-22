@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 
 import { Button } from "@/components/ui/button";
 import { BackgroundRippleEffect } from "@/components/aceternity/background-ripple-effect";
 
-import { DemoBox } from "./hero-demo";
-
+// Import removed
 export function Hero() {
   const [pos, setPos] = useState({ x: 0, y: 0 });
   useEffect(() => {
@@ -31,49 +31,55 @@ export function Hero() {
         }}
       />
       <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-3xl pt-20 pb-10 text-center md:pt-28">
-          <motion.h1
-            id="hero-title"
-            className="text-4xl leading-tight font-semibold tracking-tight text-balance md:text-6xl"
+        <div className="mx-auto max-w-4xl py-32 text-center md:py-40">
+          <motion.div
+            className="mb-6 flex justify-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            Shortly. Track. Scale.
+            <div className="bg-primary/10 text-primary ring-primary/20 hover:ring-primary/40 relative rounded-full px-4 py-1.5 text-sm leading-6 font-medium ring-1 transition-colors">
+              New: Advanced link analytics{" "}
+              <span aria-hidden="true">&rarr;</span>
+            </div>
+          </motion.div>
+
+          <motion.h1
+            id="hero-title"
+            className="from-foreground via-foreground/90 to-muted-foreground/50 bg-gradient-to-br bg-clip-text text-4xl leading-tight font-extrabold tracking-tight text-balance text-transparent sm:text-5xl md:text-6xl"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+          >
+            Shorten links. Build your brand. Grow faster.
           </motion.h1>
 
           <motion.p
-            className="text-muted-foreground mt-4 text-base text-pretty md:text-lg"
+            className="text-muted-foreground mt-4 text-base text-pretty md:text-lg lg:px-16"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.5 }}
+            transition={{ delay: 0.15, duration: 0.5 }}
           >
-            A lightning-fast, AI-powered short URL platform built for
-            performance and analytics.
+            Create branded links, track clicks in real-time across the globe,
+            and get deep insights into your audience behavior with our advanced
+            analytics dashboard.
           </motion.p>
 
           <motion.div
-            className="mt-8 flex items-center justify-center gap-3"
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <Button asChild>
-              <a href="#get-started">Get Started</a>
-            </Button>
-            <Button asChild variant="ghost">
-              <a href="#pricing">View Pricing</a>
+            <Button
+              size="lg"
+              className="px-8 text-base font-medium transition-all hover:scale-105"
+              asChild
+            >
+              <Link href="/dashboard">Get Started</Link>
             </Button>
           </motion.div>
-
-          <div className="text-muted-foreground mt-4 flex items-center justify-center text-xs">
-            <span className="bg-muted rounded px-2 py-1">
-              Press ⌘K / Ctrl K to search
-            </span>
-          </div>
         </div>
-
-        <DemoBox />
       </div>
     </section>
   );

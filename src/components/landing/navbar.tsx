@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Command, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { IconLink } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+import { ModeToggle } from "../global/mode-toggle";
 import { CommandMenu } from "./command-menu";
 
 export function Navbar() {
-  const links = [
-    { href: "#features", label: "Features" },
-    { href: "#pricing", label: "Pricing" },
-    { href: "#docs", label: "Docs" },
-    { href: "#api", label: "API" },
-    { href: "#login", label: "Login" },
-  ];
+  // const links = [
+  //   { href: "#features", label: "Features" },
+  //   { href: "#docs", label: "Docs" },
+  //   { href: "#api", label: "API" },
+  //   { href: "#login", label: "Login" },
+  // ];
 
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -46,11 +45,13 @@ export function Navbar() {
       />
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2" aria-label="Home">
-          <div className="bg-primary h-5 w-5 rounded-sm" aria-hidden="true" />
+          <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-xl shadow-sm">
+            <IconLink className="h-5 w-5" />
+          </div>
           <span className="font-semibold tracking-tight">Shortly</span>
         </Link>
 
-        <nav className="hidden md:block" aria-label="Primary">
+        {/* <nav className="hidden md:block" aria-label="Primary">
           <ul className="text-muted-foreground flex items-center gap-6 text-sm">
             {links.map((l) => (
               <li key={l.href}>
@@ -63,48 +64,17 @@ export function Navbar() {
               </li>
             ))}
           </ul>
-        </nav>
+        </nav> */}
 
         <div className="flex items-center gap-2">
-          <CommandMenu.Trigger>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hidden items-center gap-2 md:inline-flex"
-            >
-              <Command className="h-4 w-4" aria-hidden="true" />
-              <span>Search</span>
-              <span className="bg-muted text-muted-foreground ml-1 hidden items-center gap-1 rounded px-1.5 py-0.5 text-xs md:flex">
-                ⌘K
-              </span>
-            </Button>
-          </CommandMenu.Trigger>
-
-          <ThemeToggle />
           <Button asChild size="sm">
             <Link href="/auth/sign-up">Get Started</Link>
           </Button>
+          <ModeToggle />
         </div>
       </div>
 
       <CommandMenu />
     </header>
-  );
-}
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
-  return (
-    <Button
-      variant="secondary"
-      size="icon"
-      aria-label="Toggle theme"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="h-8 w-8"
-    >
-      <Sun className="h-[18px] w-[18px] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-      <Moon className="absolute h-[18px] w-[18px] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-    </Button>
   );
 }

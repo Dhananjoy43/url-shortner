@@ -150,7 +150,7 @@ export function DemoBox() {
                           )}
                         </Button>
                         <Button size="sm" asChild>
-                          <a href="#get-started">Get Started</a>
+                          <a href="/dashboard">Get Started</a>
                         </Button>
                       </div>
                     </div>

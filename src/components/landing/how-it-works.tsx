@@ -36,13 +36,16 @@ export function HowItWorks() {
               transition={{ delay: i * 0.04 }}
               className="flex"
             >
-              <Card className="border-border/60 bg-card/60 w-full">
-                <CardContent className="p-5">
-                  <Badge variant="secondary" className="rounded-full">
+              <Card className="border-border/60 bg-card/60 hover:border-primary/40 w-full transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_-10px_rgba(var(--primary),0.2)]">
+                <CardContent className="p-6">
+                  <Badge
+                    variant="secondary"
+                    className="rounded-full px-3 py-1 font-mono"
+                  >
                     {s.step}
                   </Badge>
-                  <h3 className="mt-3 font-medium">{s.title}</h3>
-                  <p className="text-muted-foreground mt-2 text-sm">
+                  <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+                  <p className="text-muted-foreground mt-2 leading-relaxed">
                     {
                       "Follow the guided flow to shorten links and start measuring results with real-time analytics."
                     }
@@ -52,34 +55,6 @@ export function HowItWorks() {
             </motion.div>
           ))}
         </div>
-
-        <motion.div
-          id="api"
-          className="mx-auto mt-10 max-w-3xl"
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <Card className="border-border/60 bg-card/60">
-            <CardContent className="p-4 md:p-6">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-muted-foreground text-sm">
-                  API snippet
-                </span>
-                <Badge variant="secondary" className="rounded-full">
-                  curl
-                </Badge>
-              </div>
-              <pre className="bg-muted overflow-x-auto rounded-md p-4 text-sm">
-                <code>
-                  {
-                    'curl -X POST https://api.shortly.dev/links \\\n  -H \'Authorization: Bearer $SHORTLY_API_KEY\' \\\n  -H \'Content-Type: application/json\' \\\n  -d \'{"url":"https://example.com/your-long-url","slug":"launch"}\''
-                  }
-                </code>
-              </pre>
-            </CardContent>
-          </Card>
-        </motion.div>
       </div>
     </section>
   );
